@@ -173,8 +173,18 @@ class Student extends JFrame{
                 		String newPassWord = changePWConfirm();//输入两次，确认密码
                 		temp_student.password = newPassWord;//更新密码
                 		this.allStuList.set(this.loginStuIndex, temp_student);//将students列表中的student更新为更改过密码的temp_student
-                		
-                		JOptionPane.showMessageDialog(null, "密码修改成功");
+                		//TODO 保存更改
+                        try {
+                            BufferedWriter bw = new BufferedWriter(new FileWriter("./student.txt"));
+                            for (Student student : this.allStuList) { // 写入student.txt保存更改
+                                bw.write(String.format("%s\t\t%s\t\t%s\t\t%s\t\t%s\t\t%s\t\t%s\n", student.stdNum, student.name, student.sex, student.birth_month_year, student.faculty, student.major, student.password));
+                            }
+                            bw.close();
+        
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                		JOptionPane.showMessageDialog(null, "密码已更新，修改成功");
                     }
 
                 }               
@@ -221,6 +231,7 @@ class Student extends JFrame{
     		if (newPassWord1.equals(newPassWord2)) {
     			JOptionPane.showMessageDialog(null, "密码修改成功");
 				result = newPassWord1;
+				break;
 			}
     		else {
     			JOptionPane.showConfirmDialog(null, "两次修改不一致，请再试一次！");
@@ -267,7 +278,7 @@ class Student extends JFrame{
 		    btntapSearchCourse.setBounds(50, 225, 200, 30);
 		    btntapSearchCourse.setForeground(Color.BLUE);
 		    
-		    JButton btntapGradeSearch = new JButton("课程查询"); 
+		    JButton btntapGradeSearch = new JButton("成绩查询"); 
 		    btntapGradeSearch.setBounds(50, 265, 200, 30);
 		    btntapGradeSearch.setForeground(Color.BLUE);
 		    
@@ -289,7 +300,7 @@ class Student extends JFrame{
 		          } );
 		    btntapGradeSearch.addActionListener(new ActionListener() {
 		          public void actionPerformed(ActionEvent e) {
-		          //new SystemAdminLogin();
+		          new GradeSearch();
 		          }
 		          } );
 		}
@@ -320,10 +331,10 @@ class Student extends JFrame{
 		    JLabel labBirth = new JLabel("出生年月："+Student.this.loginStd.birth_month_year);
 		    labBirth.setBounds(50, 125, 400, 50);
 		    
-		    JLabel labFac = new JLabel("学院："+Student.this.faculty);
+		    JLabel labFac = new JLabel("学院："+Student.this.loginStd.faculty);
 		    labFac.setBounds(50, 155, 400, 50);
 		    
-		    JLabel labMajor = new JLabel("专业："+Student.this.major);
+		    JLabel labMajor = new JLabel("专业："+Student.this.loginStd.major);
 		    labMajor.setBounds(50, 185, 400, 50);
 		    
 		    JLabel labTips = new JLabel("选择下列功能");
@@ -349,9 +360,17 @@ class Student extends JFrame{
 						return;
 					}
               		Student.this.loginStd.password = newPassWord;//更新密码
-              		Student.this.allStuList.set(Student.this.loginStuIndex, Student.this.loginStd);//将students列表中的student更新为更改过密码的temp_student
+              		Student.this.allStuList.set(Student.this.loginStuIndex, Student.this.loginStd);//将students列表中的student更新为更改过密码的temp_student   
               		
-              		
+                    try {
+                        BufferedWriter bw = new BufferedWriter(new FileWriter("./student.txt"));
+                        for (Student student : Student.this.allStuList) { // 写入student.txt保存更改
+                            bw.write(String.format("%s\t\t%s\t\t%s\t\t%s\t\t%s\t\t%s\t\t%s\n", student.stdNum, student.name, student.sex, student.birth_month_year, student.faculty, student.major, student.password));
+                        }
+                        bw.close();
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
 		          }
 		          } );
 		}
@@ -489,10 +508,157 @@ class Student extends JFrame{
 					// TODO 自动生成的 catch 块
 					e1.printStackTrace();
 				}
-			    finally {}
-			    
+			    finally {}			    
 			}
 		}		
+	}
+	
+	class GradeSearch extends JFrame{
+		String line;
+		String course_to_search;
+		boolean grade_found = Boolean.FALSE; //判断是否查询到该学生的指定课程的布尔值
+		
+		JLabel labWelcome;
+		JTextField textGrade;
+		JButton buttFind;
+		
+		public GradeSearch() {
+			// TODO 自动生成的构造函数存根
+			this.setBounds(300, 100, 500, 400);//位置参数
+		    this.setTitle("学生"+ Student.this.loginStd.name);//title
+		    this.setLayout(null);//布局
+		    this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);  //想要只关闭子窗口，方法如下：子窗口设置为setDefaultCloseOption(Jframe.DISPOSE_ON_CLOSE)     
+		    this.setVisible(true);
+		    
+		    labWelcome = new JLabel("请输入要查询的成绩课程编号");
+		    labWelcome.setBounds(50, 5, 400, 50);
+		    
+		    textGrade = new JTextField("",30);
+		    textGrade.setBounds(50, 65, 150, 30); 
+		    
+		    buttFind = new JButton("查询");
+		    buttFind.setBounds(50, 165, 200, 30); 
+		    
+		    this.add(labWelcome);
+		    this.add(textGrade);
+		    this.add(buttFind);
+		    
+		    buttFind.addActionListener(new ActionListener() {
+		          public void actionPerformed(ActionEvent e) {
+		        	  //TODO 验证搜索输入正确性
+		        	  new Student.GradeSearch.VerifyInput();
+		        	  
+		          }
+		          } );		   
+		}
+		
+		private class VerifyInput{
+			String courseFound;
+			
+			public VerifyInput() {
+				// TODO 自动生成的构造函数存根
+				if(this.verifyInput()) {
+					Student.GradeSearch.VerifyInput.this.findGrade();
+				}				
+			}
+			
+			boolean verifyInput() {
+				//TODO
+				if(Student.GradeSearch.this.textGrade.getText().equals("")) {
+					JOptionPane.showMessageDialog(null, "输入有误 请重新输入！");
+					return false;			
+				}
+				this.courseFound = Student.GradeSearch.this.textGrade.getText(); //从输入框中接收输入
+				//System.out.println("获取文字"+Student.CourseSearch.this.course_to_search);
+				return true;
+			}
+			
+			void findGrade() {
+			    String line;		    
+			    try 
+			    {
+	                BufferedReader br = null;
+					try {
+						br = new BufferedReader(new InputStreamReader(new FileInputStream(String.format("./Grade/%s.txt", this.courseFound)), "UTF-8"));
+					} catch (UnsupportedEncodingException e1) {
+						// TODO 自动生成的 catch 块
+						e1.printStackTrace();
+					}
+	                System.out.println(this.courseFound);
+	                while (true) 
+	                {
+	                    try 
+	                    {
+	                        if ((line = br.readLine()) == null) {
+	                        	JOptionPane.showMessageDialog(null, "无此课程，请检查输入");
+	                        	break;
+	                        } 
+	                    } 
+	                    catch (IOException e) 
+	                    {
+	                        e.printStackTrace();
+	                        return;
+	                    }
+	                    finally {}
+	                    Scanner scan = new Scanner(line).useDelimiter("\\s+");
+	                    String[] info = new String[6];
+	                    for (int i=0;i<6;i++)
+	                    {
+	                        info[i] = scan.next();
+	                    }
+	                    
+	                    if (info[0].equals(Student.this.loginStd.stdNum)){ //按课程名称搜索
+	                    	JFrame frame = new JFrame();
+	                    	frame.setBounds(300, 100, 500, 400);//位置参数
+	                    	frame.setTitle("成绩查询"+this.courseFound);//title
+	                    	frame.setLayout(null);//布局
+	                    	frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);  //想要只关闭子窗口而不退出
+	                    	frame.setVisible(true);
+	                    	
+	                    	JLabel labWelcome = new JLabel("课程"+this.courseFound+"成绩信息如下：");
+	            		    labWelcome.setBounds(50, 5, 400, 50);
+	            		    
+	            		    JLabel labstdNum = new JLabel("学号: " + info[0]);
+	            		    labstdNum.setBounds(50, 35, 400, 50);
+	            		    
+	            		    JLabel labstdName = new JLabel("姓名: " + info[1]);
+	            		    labstdName.setBounds(50, 65, 400, 50);
+	            		    
+	            		    JLabel labclsNum = new JLabel("课程编号: " + info[2]);
+	            		    labclsNum.setBounds(50, 95, 400, 50);
+	            		    
+	            		    JLabel labclsName1 = new JLabel("课程名称: " + info[3]);
+	            		    labclsName1.setBounds(50, 125, 400, 50);
+	            		    
+	            		    JLabel labclsTea = new JLabel("授课老师: " + info[4]);
+	            		    labclsTea.setBounds(50, 155, 400, 50);
+	            		    
+	            		    JLabel labclsGrade = new JLabel("成绩: " + info[5]);
+	            		    labclsGrade.setBounds(50, 185, 400, 50);
+
+	            		    
+	            		    JLabel labclsquit = new JLabel("点击右上角X退出");
+	            		    labclsquit.setBounds(50, 265, 400, 50);
+	                       
+	            		    frame.add(labWelcome);
+	            		    frame.add(labstdNum);
+	            		    frame.add(labstdName);
+	            		    frame.add(labclsNum);
+	            		    frame.add(labclsName1);
+	            		    frame.add(labclsTea);
+	            		    frame.add(labclsGrade);
+	            		    frame.add(labclsquit);
+	            		    
+	            		    break;
+	                    }
+	                }
+			    } catch (FileNotFoundException e1) {
+					// TODO 自动生成的 catch 块
+					e1.printStackTrace();
+				}
+			    finally {}			    
+			}
+		}	
 	}
 }
 		
