@@ -13,6 +13,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 
@@ -113,7 +114,7 @@ class Student extends JFrame{
 		stdPwTips = new JLabel("密码:");
 		stdPwTips.setBounds(50, 100, 150, 50);
 			
-		stdPwInput = new JTextField("",30);
+		stdPwInput = new JPasswordField("",30);
 		stdPwInput.setBounds(200, 117, 180, 30);
 			
 		login = new JButton("登录"); 
@@ -584,7 +585,6 @@ class Student extends JFrame{
 						// TODO 自动生成的 catch 块
 						e1.printStackTrace();
 					}
-	                System.out.println(this.courseFound);
 	                while (true) 
 	                {
 	                    try 
@@ -661,5 +661,6 @@ class Student extends JFrame{
 		}	
 	}
 }
-		
+
+
 		
