@@ -62,7 +62,7 @@ class MainMenu extends JFrame{
       
       btntapTea.addActionListener(new ActionListener() {
           public void actionPerformed(ActionEvent e) {
-          //new StudentFrame();
+          new Teacher();
           }
           } );
       

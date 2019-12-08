@@ -75,7 +75,8 @@ class Student extends JFrame{
         ArrayList<Student> students = new ArrayList<>();
         String line;
         try {
-            BufferedReader br = new BufferedReader(new FileReader("./student.txt"));
+            @SuppressWarnings("resource")
+			BufferedReader br = new BufferedReader(new FileReader("./student.txt"));
             while (true) {
                 try {
                     if ((line = br.readLine()) == null) break;
@@ -83,7 +84,8 @@ class Student extends JFrame{
                     e.printStackTrace();
                     return students;
                 }
-                Scanner scan = new Scanner(line).useDelimiter("\\s+");
+                @SuppressWarnings("resource")
+				Scanner scan = new Scanner(line).useDelimiter("\\s+");
                 String[] info = new String[7];
                 for (int i=0;i<7;i++){
                     info[i] = scan.next();
@@ -135,7 +137,8 @@ class Student extends JFrame{
     }
     
     
-    void verify() {       
+    @SuppressWarnings("unused")
+	void verify() {       
 		ArrayList<Student> students = this.Get_students();//得到所有学生对象的ArrayList
 		this.allStuList = students;  //保存待用
         String stdNum = null;
@@ -524,7 +527,7 @@ class Student extends JFrame{
 		JButton buttFind;
 		
 		public GradeSearch() {
-			// TODO 自动生成的构造函数存根
+
 			this.setBounds(300, 100, 500, 400);//位置参数
 		    this.setTitle("学生"+ Student.this.loginStd.name);//title
 		    this.setLayout(null);//布局
@@ -653,7 +656,7 @@ class Student extends JFrame{
 	                    }
 	                }
 			    } catch (FileNotFoundException e1) {
-					// TODO 自动生成的 catch 块
+
 					e1.printStackTrace();
 				}
 			    finally {}			    
