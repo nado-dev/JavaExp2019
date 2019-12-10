@@ -2,6 +2,8 @@ package scoreManagementSys;
 
 import java.io.*;
 import java.util.*;
+import java.util.List;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -25,12 +27,12 @@ class Grade{
     }
 }
 
-//TODO 针对学生个体的成绩信息添加和查询
 
 /**
- *@author 李子桐
+ *@author 李子桐 房文宇
  *@version 2019/12/8
  */
+@SuppressWarnings("serial")
 public class Teacher extends JFrame{
 	String staffNum;
 	String name;
@@ -47,8 +49,7 @@ public class Teacher extends JFrame{
 	JLabel teaPwTips;
 	JTextField teaPwInput;
 	JButton login;
-	
-	
+		
 	Teacher(){
 		this.staffNum = "Unknown";
 		this.name = "Unknown";
@@ -83,7 +84,8 @@ public class Teacher extends JFrame{
         ArrayList<Grade> grades = new ArrayList<>();
         String line;
         try {
-            BufferedReader br = new BufferedReader(new FileReader(String.format("./Grade/%s.txt", clsnum)));
+            @SuppressWarnings("resource")
+			BufferedReader br = new BufferedReader(new FileReader(String.format("./Grade/%s.txt", clsnum)));
             while (true) {
                 try {
                     if ((line = br.readLine()) == null) break;
@@ -91,7 +93,8 @@ public class Teacher extends JFrame{
                     e.printStackTrace();
                     return grades;
                 }
-                Scanner scan = new Scanner(line).useDelimiter("\\s+");
+                @SuppressWarnings("resource")
+				Scanner scan = new Scanner(line).useDelimiter("\\s+");
                 String[] info = new String[6];
                 for (int i=0;i<6;i++){
                     info[i] = scan.next();
@@ -113,7 +116,7 @@ public class Teacher extends JFrame{
     
     
     /**
-     * 获取某个文件夹下的所有文件
+              * 获取某个文件夹下的所有文件
      *
      * @param fileNameList 存放文件名称的list
      * @param path 文件夹的路径
@@ -121,14 +124,11 @@ public class Teacher extends JFrame{
      */
     ArrayList<String> getAllFileName(String path) {
         ArrayList<String> files = new ArrayList<String>();
-        boolean flag = false;
         File file = new File(path);
         File[] tempList = file.listFiles();
 
         for (int i = 0; i < tempList.length; i++) {
             if (tempList[i].isFile()) {
-//              System.out.println("文     件：" + tempList[i]);
-                //fileNameList.add(tempList[i].toString());
                 files.add(tempList[i].getName());
             }
         }
@@ -141,20 +141,27 @@ public class Teacher extends JFrame{
         String course_to_enter;
         String grade;
         int n = 0;
+        int index;
         boolean grade_enter = Boolean.FALSE; // 判断是否查询到该学生的指定课程的布尔值
-
-        	
+        ArrayList<Grade> AllGrade;
         
         public GradeInput_V2() {
+        	
+        List<Object> list=new ArrayList<Object>();
        	for(;;) {
             ArrayList<String> allcls = getAllFileName("./Grade/");
             String s1 = "";
             for(String string : allcls) {
             	s1 = s1+string.substring(0,string.lastIndexOf("."))+"\n";
+            	list.add(string.substring(0,string.lastIndexOf(".")));
             }
+            
+            int size = list.size();
+   		 	Object[] objects = (Object[])list.toArray(new Object[size]);
        		//接收课程编号输入
        		
-       		String courseNum = (String) JOptionPane.showInputDialog("请输入您要录入成绩的课程编号\n"+"您可操作的课程编号为\n"+s1);
+       		String courseNum = (String) JOptionPane.showInputDialog(null,"请选择您要录入成绩的课程编号\n"
+       				,"选择课程",JOptionPane.PLAIN_MESSAGE, null,objects, objects[0]);
        		if(courseNum == null) {
        			break;
        		}
@@ -166,28 +173,115 @@ public class Teacher extends JFrame{
        		break;
        	} 
        	
-       	int op = JOptionPane.showConfirmDialog(null
-       			, "警告！\n输入开始后请按照提示进行输入直至程序正常退出\n随意取消或关闭输入将可能会导致数据丢失\n是否继续"
-       			,"警告",JOptionPane.YES_NO_CANCEL_OPTION);
-        if (op != JOptionPane.YES_OPTION) {
-				return;
-           }
-       
+       	//加载成绩信息
+       	ArrayList<Grade> Allgrade = null;
+        Allgrade = Teacher.this.getGrade(this.course_to_enter);
+        this.AllGrade = Allgrade;
+        //选择：对个人或是对所有成绩
+        Object[] options = {"按学号登录","登录所有成绩"};
+        int m = JOptionPane.showOptionDialog(null, "请选择成绩登录方式", "成绩登录", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+        
+        //按成绩查询
+        List<Object> list1=new ArrayList<Object>();
+        String s3 = "";
+       	if (m == 0) {     		
+	       	for(int i = 0; i< Allgrade.size(); i++) {
+	         	s3 = s3+"学生学号："+Allgrade.get(i).stdnum+"学生姓名: "+Allgrade.get(i).stdname+"\n";
+	         	list1.add(Allgrade.get(i).stdnum);
+	         }        
+	        int size = list1.size();
+   		 	Object[] objects1 = (Object[])list1.toArray(new Object[size]);   		
+	       	//遍历查询该学生       	
+	       	outerLoop:while(true) {
+	       		String stdnum = (String) JOptionPane.showInputDialog(null, "请输入学生学号", "成绩登录", JOptionPane.PLAIN_MESSAGE, null, objects1, objects1[0]);
+	       		if (stdnum == null) {
+					return;
+				}
+	       		int index = 0;//下标
+	       		for(;index < Allgrade.size(); index++) {
+	           		if (Allgrade.get(index).stdnum.equals(stdnum)) {
+						JOptionPane.showMessageDialog(null, "查找成功！");
+						this.index = index;
+						break outerLoop;
+					}           		
+	           	}
+	       		JOptionPane.showMessageDialog(null, "无此学生信息，请检查输入");
+	       	}
+	       	
+	       	int op = JOptionPane.showConfirmDialog(null
+	       			, "警告！\n输入开始后请按照提示进行输入直至程序正常退出\n随意取消或关闭输入将可能会导致数据丢失\n是否继续"
+	       			,"警告",JOptionPane.YES_NO_CANCEL_OPTION);
+	        if (op != JOptionPane.YES_OPTION) 
+				return;	           
+	        else {
+
+	        	JFrame frame = new JFrame();
+	        	frame.setBounds(300, 100, 700, 700);//位置参数
+	        	frame.setTitle("课程成绩信息查询"+this.course_to_enter);//title
+	        	frame.setLayout(null);//布局
+	        	frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);  //想要只关闭子窗口而不退出
+	        	frame.setVisible(true);
+	        	
+	        	JLabel labWelcome = new JLabel("学号"+Allgrade.get(this.index).stdnum+"	课程"+this.course_to_enter+"成绩信息如下：");
+	    	    labWelcome.setBounds(50, 5, 400, 50);
+	    	    
+	    	    String s4 = "";
+	            s4 = s4+"学生学号："+Allgrade.get(this.index).stdnum+"<br>"+
+	            "学生姓名: "+Allgrade.get(this.index).stdname+"<br>"+
+	            "课程名称："+Allgrade.get(this.index).clsname+"<br>"+
+	            "授课教师："+Allgrade.get(this.index).teaname+"<br>"+
+	            "成绩："+Allgrade.get(this.index).grade;            
+	            s4 = "<html><body>" + s4 + "<html><body>";
+	            
+	            JLabel labDetail = new JLabel(s4);
+	    	    labDetail.setBounds(50, 70, 400, 300);
+	    	    labDetail.setForeground(Color.RED);
+	    	    labDetail.setFont(new Font("Serif", Font.PLAIN, 16));
+
+	    	    JButton isChangeGrade = new JButton("更新此学生成绩");
+	    	    isChangeGrade.setBounds(150, 450, 180, 30);
+	    	    isChangeGrade.setForeground(Color.RED);
+	    	    
+	    	    frame.add(labWelcome);
+	    	    frame.add(labDetail);
+	    	    frame.add(isChangeGrade);
+	    	    
+	    	    isChangeGrade.addActionListener(new ActionListener() {
+			          public void actionPerformed(ActionEvent e) {
+			        	  String newGrade = null;
+			        	  while(true) {
+						         newGrade = (String)JOptionPane.showInputDialog("请输入新成绩");
+						         if (newGrade ==null) {
+									return;//取消
+								}
+						        if (newGrade.equals("")) {
+									JOptionPane.showMessageDialog(null, "输入有误，请重试");
+									continue;
+								}
+						        break;
+			        	  }
+			        	  Teacher.GradeInput_V2.this.AllGrade.get(Teacher.GradeInput_V2.this.index).grade = newGrade;
+			        	  writeNewGrade(Teacher.GradeInput_V2.this.AllGrade, Teacher.GradeInput_V2.this.course_to_enter);
+			        	  JOptionPane.showMessageDialog(null, "修改成功！");
+				     }
+				 } );
+	        }
+        }
         else {
-        	 ArrayList<Grade> Allgrade = null;
-             Allgrade = getGrade(this.course_to_enter);
+        	 ArrayList<Grade> Allgrade1 = null;
+             Allgrade1 = getGrade(this.course_to_enter);
              int i = 0;
-             for(; i < Allgrade.size();i++) {
+             for(; i < Allgrade1.size();i++) {
             	 JOptionPane.showMessageDialog(null, "您将要登录的成绩的课程信息"+"\n"
-                         						+"学号: " + Allgrade.get(i).stdnum+ "\n" 
-                         						+"姓名: " + Allgrade.get(i).stdname +"\n"
-                         						+"课程编号: " + Allgrade.get(i).clsnum+"\n"
-                         						+"课程名称: " + Allgrade.get(i).clsname+"\n"
-                         						+"教师: " +Allgrade.get(i).teaname+"\n"
-            	 								+"已录入的成绩（null为未录入）"+Allgrade.get(i).grade);
+                         						+"学号: " + Allgrade1.get(i).stdnum+ "\n" 
+                         						+"姓名: " + Allgrade1.get(i).stdname +"\n"
+                         						+"课程编号: " + Allgrade1.get(i).clsnum+"\n"
+                         						+"课程名称: " + Allgrade1.get(i).clsname+"\n"
+                         						+"教师: " +Allgrade1.get(i).teaname+"\n"
+            	 								+"已录入的成绩（null为未录入）"+Allgrade1.get(i).grade);
              	for(;;) {
             		//接收具体学生成绩输入
-            		String grade = (String) JOptionPane.showInputDialog(String.format("请输入您输入学生  %s 的  %s 成绩",  Allgrade.get(i).stdnum, Teacher.GradeInput_V2.this.course_to_enter));
+            		String grade = (String) JOptionPane.showInputDialog(String.format("请输入您输入学生  %s 的  %s 成绩",  Allgrade1.get(i).stdnum, Teacher.GradeInput_V2.this.course_to_enter));
             		if(grade == null) {
             			break;
             		}
@@ -195,12 +289,12 @@ public class Teacher extends JFrame{
             			JOptionPane.showMessageDialog(null, "请正确输入！");
             			continue;
     				}
-            		Allgrade.get(i).grade = grade;
+            		Allgrade1.get(i).grade = grade;
                     break;
             	} 
         	}
              
-             writeNewGrade(Allgrade, this.course_to_enter);
+             writeNewGrade(Allgrade1, this.course_to_enter);
         }
     }
 }
@@ -246,7 +340,8 @@ public class Teacher extends JFrame{
         ArrayList<Teacher> teachers = new ArrayList<>();
         String line;
         try {
-            BufferedReader br = new BufferedReader(new FileReader("./teacher.txt"));
+            @SuppressWarnings("resource")
+			BufferedReader br = new BufferedReader(new FileReader("./teacher.txt"));
             while (true) {
                 try {
                     if ((line = br.readLine()) == null) break;
@@ -254,7 +349,8 @@ public class Teacher extends JFrame{
                     e.printStackTrace();
                     return teachers;
                 }
-                Scanner scan = new Scanner(line).useDelimiter("\\s+");
+                @SuppressWarnings("resource")
+				Scanner scan = new Scanner(line).useDelimiter("\\s+");
                 String[] info = new String[5];
                 for (int i=0;i<5;i++){
                     info[i] = scan.next();
@@ -358,8 +454,6 @@ public class Teacher extends JFrame{
 					}
     			}
     			this.loginTea = temp_teacher;
-    			JOptionPane jO = null;
-    			int option = JOptionPane.YES_OPTION;
     			JOptionPane.showMessageDialog(null, temp_teacher.name + " 登录成功"); 			
     			new TeaMenu();
     		}
@@ -466,6 +560,7 @@ public class Teacher extends JFrame{
 		          } );
   		}
   	}
+  	
   	class GradeQrury{
  		String line;
         String course_to_enter;
@@ -475,15 +570,20 @@ public class Teacher extends JFrame{
 
                
         public GradeQrury() {
+        List<Object> list=new ArrayList<Object>();	
        	for(;;) {
             ArrayList<String> allcls = getAllFileName("./Grade/");
             String s1 = "";
             for(String string : allcls) {
             	s1 = s1+string.substring(0,string.lastIndexOf("."))+"\n";
+            	list.add(string.substring(0,string.lastIndexOf(".")));
             }
+            
+            int size = list.size();
+   		 	Object[] objects = (Object[])list.toArray(new Object[size]);   
+   
        		//接收课程编号输入
-       		
-       		String courseNum = (String) JOptionPane.showInputDialog("请输入您要录入成绩的课程编号\n"+"您可操作的课程编号为\n"+s1);
+       		String courseNum = (String) JOptionPane.showInputDialog(null, "请选择您要查找成绩的课程编号", "成绩查询", JOptionPane.PLAIN_MESSAGE, null, objects, objects[0]);;
        		if(courseNum == null) {
        			break;
        		}
@@ -495,31 +595,95 @@ public class Teacher extends JFrame{
        		break;      		
        	} 
        	
-       	JFrame frame = new JFrame();
-    	frame.setBounds(300, 100, 500, 400);//位置参数
-    	frame.setTitle("课程成绩信息查询"+this.course_to_enter);//title
-    	frame.setLayout(null);//布局
-    	frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);  //想要只关闭子窗口而不退出
-    	frame.setVisible(true);
-    	
-    	JLabel labWelcome = new JLabel("课程"+this.course_to_enter+"课程成绩信息如下：");
-	    labWelcome.setBounds(50, 5, 400, 50);
-	    
-	    ArrayList<Grade> Allgrade = null;
+       	//加载成绩信息
+       	ArrayList<Grade> Allgrade = null;
         Allgrade = Teacher.this.getGrade(this.course_to_enter);
-        String s2 = "";
-        for(int i = 0; i< Allgrade.size(); i++) {
-        	s2 = s2+"学生学号："+Allgrade.get(i).stdnum+"	学生姓名: "+Allgrade.get(i).stdname+"	分数："+Allgrade.get(i).grade+"<br>";
-        }
-        s2 = "<html><body>" + s2 + "<html><body>";
+        //选择：对个人查询或是对所有成绩查询
+        Object[] options = {"按学号查询","查询所有成绩"};
+        int m = JOptionPane.showOptionDialog(null, "请选择查询方式", "成绩查询", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
         
-	    JLabel labDetail = new JLabel(s2);
-	    labDetail.setBounds(50, 70, 400, 300);
-	    
-	    frame.add(labWelcome);
-	    frame.add(labDetail);
-  	}
-  	}
+        //按个人查
+        List<Object> list1=new ArrayList<Object>();	
+        String s3 = "";
+       	if (m == 0) {     		
+       		for(int i = 0; i< Allgrade.size(); i++) {
+         	s3 = s3+"学生学号："+Allgrade.get(i).stdnum+"学生姓名: "+Allgrade.get(i).stdname+"\n";
+         	list1.add(Allgrade.get(i).stdnum);
+         }        
+       	 int size = list1.size();
+		 Object[] objects1 = (Object[])list1.toArray(new Object[size]);   	
+       	Grade resultGrade = new Grade();	
+       	//遍历查询该学生
+       	outerLoop:while(true) {
+       		String stdnum =  (String) JOptionPane.showInputDialog(null, "请选择您要查找成绩的学生学号编号", "成绩查询", JOptionPane.PLAIN_MESSAGE, null, objects1, objects1[0]);;
+       		if (stdnum == null) {
+				return;
+			}
+       		for(Grade grade: Allgrade) {
+           		if (grade.stdnum.equals(stdnum)) {
+					JOptionPane.showMessageDialog(null, "查找成功！");
+					resultGrade = grade;
+					break outerLoop;
+				}           		
+           	}
+       		JOptionPane.showMessageDialog(null, "无此成绩信息，请检查输入");
+       	}
+       		
+       		JFrame frame = new JFrame();
+        	frame.setBounds(300, 100, 500, 400);//位置参数
+        	frame.setTitle("课程成绩信息查询"+this.course_to_enter);//title
+        	frame.setLayout(null);//布局
+        	frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);  //想要只关闭子窗口而不退出
+        	frame.setVisible(true);
+        	
+        	JLabel labWelcome = new JLabel("学号"+resultGrade.stdnum+"	课程"+this.course_to_enter+"成绩信息如下：");
+    	    labWelcome.setBounds(50, 5, 400, 50);
+    	    
+    	    String s4 = "";
+            s4 = s4+"学生学号："+resultGrade.stdnum+"<br>"+
+            "学生姓名: "+resultGrade.stdname+"<br>"+
+            "课程名称："+resultGrade.clsname+"<br>"+
+            "授课教师："+resultGrade.teaname+"<br>"+
+            "成绩："+resultGrade.grade;            
+            s4 = "<html><body>" + s4 + "<html><body>";
+            
+            JLabel labDetail = new JLabel(s4);
+    	    labDetail.setBounds(50, 70, 400, 300);
+    	    labDetail.setForeground(Color.RED);
+    	    labDetail.setFont(new Font("Serif", Font.PLAIN, 16));
+    	    frame.add(labWelcome);
+    	    frame.add(labDetail);
+		}
+       	
+       	else 
+       	{
+	       	JFrame frame = new JFrame();
+	    	frame.setBounds(300, 100, 500, 400);//位置参数
+	    	frame.setTitle("课程成绩信息查询"+this.course_to_enter);//title
+	    	frame.setLayout(null);//布局
+	    	frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);  //想要只关闭子窗口而不退出
+	    	frame.setVisible(true);
+	    	
+	    	JLabel labWelcome = new JLabel("课程"+this.course_to_enter+"课程成绩信息如下：");
+		    labWelcome.setBounds(50, 5, 400, 50);
+		    
+		    
+	        String s2 = "";
+	        for(int i = 0; i< Allgrade.size(); i++) {
+	        	s2 = s2+"学生学号："+Allgrade.get(i).stdnum+"	学生姓名: "+Allgrade.get(i).stdname+"	分数："+Allgrade.get(i).grade+"<br>";
+	        }
+	        s2 = "<html><body>" + s2 + "<html><body>";
+	        
+		    JLabel labDetail = new JLabel(s2);
+		    labDetail.setBounds(50, 70, 400, 300);
+		    labDetail.setFont(new Font("Serif", Font.PLAIN, 16));
+		    
+		    frame.add(labWelcome);
+		    frame.add(labDetail);
+       	}
+     }
+  }
+  	
   	class PersonalInfo extends JFrame{
 		public PersonalInfo() {
 			this.setBounds(300, 100, 500, 400);//位置参数
@@ -575,12 +739,9 @@ public class Teacher extends JFrame{
                   } catch (IOException e1) {
                       e1.printStackTrace();
                   }
-		          }
-		          } );
-				}
-  }
-
+		      }
+		    } );
+		}
+  	}
 }
-
-
 
