@@ -116,7 +116,7 @@ public class Teacher extends JFrame{
     
     
     /**
-              * 获取某个文件夹下的所有文件
+     * 获取某个文件夹下的所有文件
      *
      * @param fileNameList 存放文件名称的list
      * @param path 文件夹的路径
@@ -183,10 +183,10 @@ public class Teacher extends JFrame{
         
         //按成绩查询
         List<Object> list1=new ArrayList<Object>();
-        String s3 = "";
+        //String s3 = "";
        	if (m == 0) {     		
 	       	for(int i = 0; i< Allgrade.size(); i++) {
-	         	s3 = s3+"学生学号："+Allgrade.get(i).stdnum+"学生姓名: "+Allgrade.get(i).stdname+"\n";
+	         	//s3 = s3+"学生学号："+Allgrade.get(i).stdnum+"学生姓名: "+Allgrade.get(i).stdname+"\n";
 	         	list1.add(Allgrade.get(i).stdnum);
 	         }        
 	        int size = list1.size();

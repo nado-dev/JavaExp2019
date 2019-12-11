@@ -1,9 +1,11 @@
 package scoreManagementSys;
 
-import java.util.ArrayList;   
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
@@ -16,7 +18,24 @@ import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
-
+/**
+ * 成绩形式数据组成
+ */
+class Course{
+	String clsnum;
+	String clsname;
+	String credit;
+	String clshour;
+	String teaname;
+	
+	void SetData(String clsnum, String clsname, String credit,String clshour,String teaname){
+		this.clsnum = clsnum;
+		this.clsname = clsname;
+		this.credit = credit;
+		this.clshour = clshour;
+		this.teaname = teaname;
+    }
+}
 /**
  *@author 罗文凯
  *@version 2019/12/4
@@ -60,6 +79,44 @@ class Student extends JFrame{
     }
 	
 	
+    /**
+     * 
+     * @param clsnum
+     * @return ArrayList 当前文件下所有课程对象组成的list
+     */
+    ArrayList<Course> getCourse(){
+        ArrayList<Course> courses = new ArrayList<>();
+        String line;
+        try {
+            @SuppressWarnings("resource")
+			BufferedReader br = new BufferedReader(new FileReader("./Course.txt"));
+            while (true) {
+                try {
+                    if ((line = br.readLine()) == null) break;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return courses;
+                }
+                @SuppressWarnings("resource")
+				Scanner scan = new Scanner(line).useDelimiter("\\s+");
+                String[] info = new String[5];
+                for (int i=0;i<5;i++){
+                    info[i] = scan.next();
+                }
+                Course course = new Course();
+                course.SetData(info[0], info[1], info[2], info[3], info[4]);
+                courses.add(course);
+            }
+        }catch (FileNotFoundException notfound){
+            File file = new File("./Course.txt");
+            try {
+                file.createNewFile();
+            }catch (IOException io){
+                io.printStackTrace();
+            }
+        }
+        return courses;
+    }
 	void SetData(String stdNum, String name, String sex, String birth_month_year, String faculty, String major, String password){
         this.stdNum = stdNum;
         this.name = name;
@@ -381,7 +438,7 @@ class Student extends JFrame{
 	}
 	
 	//课程查询
-	class CourseSearch extends JFrame{
+	class CourseSearch{
 		String course_to_search;
 		boolean isFound = Boolean.FALSE;
 		
@@ -390,55 +447,40 @@ class Student extends JFrame{
 		JButton buttFind;
 		
 		public CourseSearch() {
-			String line;
-			this.setBounds(300, 100, 500, 400);//位置参数
-		    this.setTitle("学生"+ Student.this.loginStd.name);//title
-		    this.setLayout(null);//布局
-		    this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);  //想要只关闭子窗口，方法如下：子窗口设置为setDefaultCloseOption(Jframe.DISPOSE_ON_CLOSE)     
-		    this.setVisible(true);
-		    
-		    labWelcome = new JLabel("请输入要查询的课程名称");
-		    labWelcome.setBounds(50, 5, 400, 50);
-		    
-		    textCourse = new JTextField("",30);
-		    textCourse.setBounds(50, 65, 150, 30); 
-		    
-		    buttFind = new JButton("查询");
-		    buttFind.setBounds(50, 165, 200, 30); 
-		    
-		    this.add(labWelcome);
-		    this.add(textCourse);
-		    this.add(buttFind);
-		    
-		    buttFind.addActionListener(new ActionListener() {
-		          public void actionPerformed(ActionEvent e) {
-		        	  //TODO 验证搜索输入正确性
-		        	  //System.out.print("nal");
-		        	  new Student.CourseSearch.VerifyInput();
-		        	  
-		          }
-		          } );		   
+	    
+		    List<Object> list=new ArrayList<Object>();	
+	       	for(;;) {
+	            ArrayList<Course> allcls = Student.this.getCourse();
+	            String s1 = "";
+	            for(Course string : allcls) {
+	            	s1 = s1+string.clsname+"\n";
+	            	list.add(string.clsname);
+	            }
+	            
+	            int size = list.size();
+	   		 	Object[] objects = (Object[])list.toArray(new Object[size]);   
+	   
+	       		//接收课程名称输入
+	       		String courseName = (String) JOptionPane.showInputDialog(null, "请选择您要查找信息的课程编号", "课程信息查询", JOptionPane.PLAIN_MESSAGE, null, objects, objects[0]);
+	       		if(courseName == null) {
+	       			break;
+	       		}
+	       		if (courseName =="") {
+	       			JOptionPane.showMessageDialog(null, "请正确输入！");
+	       			continue;
+					}
+	       		this.course_to_search = courseName;
+	       		break;      		
+	       	} 
+	       	new VerifyInput(); 
 		}
 		
 		private class VerifyInput{
 			String courseFound;
 			
 			public VerifyInput() {
-				// TODO 自动生成的构造函数存根
-				if(this.verifyInput()) {
-					Student.CourseSearch.VerifyInput.this.findCourse();
-				}				
-			}
-			
-			boolean verifyInput() {
-				//TODO
-				if(Student.CourseSearch.this.textCourse.getText().equals("")) {
-					JOptionPane.showMessageDialog(null, "输入有误 请重新输入！");
-					return false;			
-				}
-				this.courseFound = Student.CourseSearch.this.textCourse.getText(); //从输入框中接收输入
-				//System.out.println("获取文字"+Student.CourseSearch.this.course_to_search);
-				return true;
+				this.courseFound = Student.CourseSearch.this.course_to_search;
+				Student.CourseSearch.VerifyInput.this.findCourse();						
 			}
 			
 			void findCourse() {
@@ -517,7 +559,7 @@ class Student extends JFrame{
 		}		
 	}
 	
-	class GradeSearch extends JFrame{
+	class GradeSearch {
 		String line;
 		String course_to_search;
 		boolean grade_found = Boolean.FALSE; //判断是否查询到该学生的指定课程的布尔值
@@ -526,74 +568,75 @@ class Student extends JFrame{
 		JTextField textGrade;
 		JButton buttFind;
 		
-		public GradeSearch() {
-
-			this.setBounds(300, 100, 500, 400);//位置参数
-		    this.setTitle("学生"+ Student.this.loginStd.name);//title
-		    this.setLayout(null);//布局
-		    this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);  //想要只关闭子窗口，方法如下：子窗口设置为setDefaultCloseOption(Jframe.DISPOSE_ON_CLOSE)     
-		    this.setVisible(true);
-		    
-		    labWelcome = new JLabel("请输入要查询的成绩课程编号");
-		    labWelcome.setBounds(50, 5, 400, 50);
-		    
-		    textGrade = new JTextField("",30);
-		    textGrade.setBounds(50, 65, 150, 30); 
-		    
-		    buttFind = new JButton("查询");
-		    buttFind.setBounds(50, 165, 200, 30); 
-		    
-		    this.add(labWelcome);
-		    this.add(textGrade);
-		    this.add(buttFind);
-		    
-		    buttFind.addActionListener(new ActionListener() {
-		          public void actionPerformed(ActionEvent e) {
-		        	  //TODO 验证搜索输入正确性
-		        	  new Student.GradeSearch.VerifyInput();
-		        	  
-		          }
-		          } );		   
+		public GradeSearch() {		    
+		    List<Object> list=new ArrayList<Object>();	
+	       	for(;;) {
+	            ArrayList<String> allcls = getAllFileName("./Grade/");
+	            String s1 = "";
+	            for(String string : allcls) {
+	            	s1 = s1+string.substring(0,string.lastIndexOf("."))+"\n";
+	            	list.add(string.substring(0,string.lastIndexOf(".")));
+	            }
+	            
+	            int size = list.size();
+	   		 	Object[] objects = (Object[])list.toArray(new Object[size]);   
+	   
+	       		//接收课程编号输入
+	       		String courseNum = (String) JOptionPane.showInputDialog(null, "请选择您要查找成绩的课程编号", "成绩查询", JOptionPane.PLAIN_MESSAGE, null, objects, objects[0]);;
+	       		if(courseNum == null) {
+	       			break;
+	       		}
+	       		if (courseNum =="") {
+	       			JOptionPane.showMessageDialog(null, "请正确输入！");
+	       			continue;
+					}
+	       		this.course_to_search = courseNum;
+	       		break;      		
+	       	} 
+	       	new VerifyInput();
 		}
+		
+/**
+* 获取某个文件夹下的所有文件
+*
+* @param fileNameList 存放文件名称的list
+* @param path 文件夹的路径
+* @return 所有文件名的list
+*/
+	ArrayList<String> getAllFileName(String path) {
+	   ArrayList<String> files = new ArrayList<String>();
+	   File file = new File(path);
+	   File[] tempList = file.listFiles();
+
+	   for (int i = 0; i < tempList.length; i++) {
+		   if (tempList[i].isFile()) {
+			   files.add(tempList[i].getName());
+		   }
+	   }
+	   return files;
+			}
 		
 		private class VerifyInput{
 			String courseFound;
 			
 			public VerifyInput() {
-				// TODO 自动生成的构造函数存根
-				if(this.verifyInput()) {
-					Student.GradeSearch.VerifyInput.this.findGrade();
-				}				
+				this.courseFound = Student.GradeSearch.this.course_to_search; //从输入框中接收输入
+				findGrade();		
 			}
 			
-			boolean verifyInput() {
-				//TODO
-				if(Student.GradeSearch.this.textGrade.getText().equals("")) {
-					JOptionPane.showMessageDialog(null, "输入有误 请重新输入！");
-					return false;			
-				}
-				this.courseFound = Student.GradeSearch.this.textGrade.getText(); //从输入框中接收输入
-				//System.out.println("获取文字"+Student.CourseSearch.this.course_to_search);
-				return true;
-			}
 			
 			void findGrade() {
 			    String line;		    
 			    try 
 			    {
 	                BufferedReader br = null;
-					try {
-						br = new BufferedReader(new InputStreamReader(new FileInputStream(String.format("./Grade/%s.txt", this.courseFound)), "UTF-8"));
-					} catch (UnsupportedEncodingException e1) {
-						// TODO 自动生成的 catch 块
-						e1.printStackTrace();
-					}
+					br = new BufferedReader(new InputStreamReader(new FileInputStream(String.format("./Grade/%s.txt", this.courseFound))));
 	                while (true) 
 	                {
 	                    try 
 	                    {
 	                        if ((line = br.readLine()) == null) {
-	                        	JOptionPane.showMessageDialog(null, "无此课程，请检查输入");
+	                        	JOptionPane.showMessageDialog(null, "无此课程成绩，请检查输入");
 	                        	break;
 	                        } 
 	                    } 
@@ -612,7 +655,7 @@ class Student extends JFrame{
 	                    
 	                    if (info[0].equals(Student.this.loginStd.stdNum)){ //按课程名称搜索
 	                    	JFrame frame = new JFrame();
-	                    	frame.setBounds(300, 100, 500, 400);//位置参数
+	                    	frame.setBounds(300, 100, 500, 500);//位置参数
 	                    	frame.setTitle("成绩查询"+this.courseFound);//title
 	                    	frame.setLayout(null);//布局
 	                    	frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);  //想要只关闭子窗口而不退出
@@ -621,35 +664,24 @@ class Student extends JFrame{
 	                    	JLabel labWelcome = new JLabel("课程"+this.courseFound+"成绩信息如下：");
 	            		    labWelcome.setBounds(50, 5, 400, 50);
 	            		    
-	            		    JLabel labstdNum = new JLabel("学号: " + info[0]);
-	            		    labstdNum.setBounds(50, 35, 400, 50);
-	            		    
-	            		    JLabel labstdName = new JLabel("姓名: " + info[1]);
-	            		    labstdName.setBounds(50, 65, 400, 50);
-	            		    
-	            		    JLabel labclsNum = new JLabel("课程编号: " + info[2]);
-	            		    labclsNum.setBounds(50, 95, 400, 50);
-	            		    
-	            		    JLabel labclsName1 = new JLabel("课程名称: " + info[3]);
-	            		    labclsName1.setBounds(50, 125, 400, 50);
-	            		    
-	            		    JLabel labclsTea = new JLabel("授课老师: " + info[4]);
-	            		    labclsTea.setBounds(50, 155, 400, 50);
-	            		    
-	            		    JLabel labclsGrade = new JLabel("成绩: " + info[5]);
-	            		    labclsGrade.setBounds(50, 185, 400, 50);
-
-	            		    
+	            		    String detailInfo = "";
+	            		    detailInfo = detailInfo + "学号: " + info[0] +"<br>"+
+	            		    			"姓名: " + info[1]+"<br>"+
+	            		    			"课程编号: " + info[2]+"<br>"+
+	            		    			"课程名称: " + info[3]+"<br>"+
+	            		    			"授课老师: " + info[4]+"<br>"+
+	            		    			"成绩: " + info[5];
+	            		    detailInfo = "<html><body>" + detailInfo + "<html><body>";
+	            		    JLabel labstdInfo = new JLabel(detailInfo);
+	            		    labstdInfo.setBounds(50, 70, 400, 350);
+	            		    labstdInfo.setFont(new Font("fangsong", Font.PLAIN, 16));
+            		    
 	            		    JLabel labclsquit = new JLabel("点击右上角X退出");
-	            		    labclsquit.setBounds(50, 265, 400, 50);
+	            		    labclsquit.setBounds(50, 380, 400, 50);
 	                       
 	            		    frame.add(labWelcome);
-	            		    frame.add(labstdNum);
-	            		    frame.add(labstdName);
-	            		    frame.add(labclsNum);
-	            		    frame.add(labclsName1);
-	            		    frame.add(labclsTea);
-	            		    frame.add(labclsGrade);
+	            		    frame.add(labstdInfo);
+	            		
 	            		    frame.add(labclsquit);
 	            		    
 	            		    break;
