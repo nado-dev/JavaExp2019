@@ -126,7 +126,9 @@ public class Teacher extends JFrame{
         ArrayList<String> files = new ArrayList<String>();
         File file = new File(path);
         File[] tempList = file.listFiles();
-
+        if(tempList.length == 0) {
+        	return null;
+        }
         for (int i = 0; i < tempList.length; i++) {
             if (tempList[i].isFile()) {
                 files.add(tempList[i].getName());
@@ -198,6 +200,10 @@ public class Teacher extends JFrame{
 					return;
 				}
 	       		int index = 0;//下标
+	       		if (Allgrade.size() == 0) {
+					JOptionPane.showMessageDialog(null, "此课程信息为空，请联系教务员");
+					return;
+				}
 	       		for(;index < Allgrade.size(); index++) {
 	           		if (Allgrade.get(index).stdnum.equals(stdnum)) {
 						JOptionPane.showMessageDialog(null, "查找成功！");
@@ -457,6 +463,10 @@ public class Teacher extends JFrame{
     			JOptionPane.showMessageDialog(null, temp_teacher.name + " 登录成功"); 			
     			new TeaMenu();
     		}
+    		else {
+    			JOptionPane.showMessageDialog(null, "密码错误，请重试");
+    		}
+    		
     	}
     }
     
