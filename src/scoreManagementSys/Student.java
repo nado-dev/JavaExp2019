@@ -196,6 +196,10 @@ class Student extends JFrame{
     @SuppressWarnings("unused")
 	void verify() {       
 		ArrayList<Student> students = this.Get_students();//得到所有学生对象的ArrayList
+		if (students.size() == 0) {
+			JOptionPane.showMessageDialog(null, "无学生信息，登录失败");
+			return;
+		}
 		this.allStuList = students;  //保存待用
         String stdNum = null;
         String password = null;
@@ -209,6 +213,10 @@ class Student extends JFrame{
         	stdNum = stdIDInput.getText();
         	password = stdPwInput.getText();
 		}
+        if(stdNum == null || password == null) {
+        	JOptionPane.showMessageDialog(null, "账号或密码不能为空");
+        	return;
+        }
         //查找学生账号
         for (Student student : students) {
             if (stdNum.equals(student.stdNum)) {
@@ -233,7 +241,6 @@ class Student extends JFrame{
                 		String newPassWord = changePWConfirm();//输入两次，确认密码
                 		temp_student.password = newPassWord;//更新密码
                 		this.allStuList.set(this.loginStuIndex, temp_student);//将students列表中的student更新为更改过密码的temp_student
-                		//TODO 保存更改
                         try {
                             BufferedWriter bw = new BufferedWriter(new FileWriter("./student.txt"));
                             for (Student student : this.allStuList) { // 写入student.txt保存更改
@@ -268,8 +275,6 @@ class Student extends JFrame{
     String changePWConfirm() {
     	String result = null;
 		for(;;) {
-    		//TODO 修改密码
-
     		String newPassWord1 = (String)JOptionPane.showInputDialog("输入新的密码");
     		if (newPassWord1 == null ) {
     			break;
@@ -318,7 +323,7 @@ class Student extends JFrame{
 	class StdMenu extends JFrame{
 		public StdMenu() {
 	
-			this.setBounds(300, 100, 550, 430);//位置参数
+			this.setBounds(300, 150, 500, 450);//位置参数
 		    this.setTitle("学生"+ Student.this.loginStd.name);//title
 		    this.setLayout(null);//布局
 		    this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  //想要只关闭子窗口，方法如下：子窗口设置为setDefaultCloseOption(Jframe.DISPOSE_ON_CLOSE)     
@@ -370,7 +375,7 @@ class Student extends JFrame{
 	//个人信息维护
 	class PersonalInfo extends JFrame{
 		public PersonalInfo() {
-			this.setBounds(300, 100, 500, 400);//位置参数
+			this.setBounds(3300, 150, 500, 450);//位置参数
 		    this.setTitle("学生"+ Student.this.loginStd.name);//title
 		    this.setLayout(null);//布局
 		    this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);  //想要只关闭子窗口，方法如下：子窗口设置为setDefaultCloseOption(Jframe.DISPOSE_ON_CLOSE)     
@@ -462,7 +467,7 @@ class Student extends JFrame{
 	       		//接收课程名称输入
 	       		String courseName = (String) JOptionPane.showInputDialog(null, "请选择您要查找信息的课程编号", "课程信息查询", JOptionPane.PLAIN_MESSAGE, null, objects, objects[0]);
 	       		if(courseName == null) {
-	       			break;
+	       			return;
 	       		}
 	       		if (courseName =="") {
 	       			JOptionPane.showMessageDialog(null, "请正确输入！");
@@ -511,7 +516,7 @@ class Student extends JFrame{
 	                    
 	                    if (info[1].equals(this.courseFound)){ //按课程名称搜索
 	                    	JFrame frame = new JFrame();
-	                    	frame.setBounds(300, 100, 500, 400);//位置参数
+	                    	frame.setBounds(300, 150, 500, 450);//位置参数
 	                    	frame.setTitle("课程信息查询"+this.courseFound);//title
 	                    	frame.setLayout(null);//布局
 	                    	frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);  //想要只关闭子窗口而不退出
@@ -536,7 +541,7 @@ class Student extends JFrame{
 	            		    labclsTea.setBounds(50, 155, 400, 50);
 	            		    
 	            		    JLabel labclsquit = new JLabel("点击右上角X退出");
-	            		    labclsquit.setBounds(50, 185, 400, 50);
+	            		    labclsquit.setBounds(50, 135, 400, 50);
 	                       
 	            		    frame.add(labWelcome);
 	            		    frame.add(labclsNum);
@@ -550,7 +555,6 @@ class Student extends JFrame{
 	                    }
 	                }
 			    } catch (FileNotFoundException e1) {
-					// TODO 自动生成的 catch 块
 					e1.printStackTrace();
 				}
 			    finally {}			    
@@ -654,7 +658,7 @@ class Student extends JFrame{
 	                    
 	                    if (info[0].equals(Student.this.loginStd.stdNum)){ //按课程名称搜索
 	                    	JFrame frame = new JFrame();
-	                    	frame.setBounds(300, 100, 500, 500);//位置参数
+	                    	frame.setBounds(300, 150, 500, 450);//位置参数
 	                    	frame.setTitle("成绩查询"+this.courseFound);//title
 	                    	frame.setLayout(null);//布局
 	                    	frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);  //想要只关闭子窗口而不退出

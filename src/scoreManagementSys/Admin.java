@@ -136,20 +136,27 @@ class Admin extends JFrame{
 			idInput = adminIDInput.getText();
 			pwInput = adminPwInput.getText();
 		}
-			
-		if (idInput.equals(this.adminId) && pwInput.equals(this.adminPW)) {
-			
-			JOptionPane jO = null;
-			int option = JOptionPane.YES_OPTION;
-			jO.showMessageDialog(null, "登录成功");
-			if(option == jO.YES_OPTION) {
-				new AdminMenu();
+		try {
+			if (idInput.equals(this.adminId) && pwInput.equals(this.adminPW)) {
+				
+				JOptionPane jO = null;
+				int option = JOptionPane.YES_OPTION;
+				jO.showMessageDialog(null, "登录成功");
+				if(option == jO.YES_OPTION) {
+					new AdminMenu();
+				}
+				this.isVerify = true;
 			}
-			this.isVerify = true;
+			else {
+				JOptionPane.showMessageDialog(null, "账号或密码错误，请重试");
+			}
 		}
-		else {
-			JOptionPane.showMessageDialog(null, "账号或密码错误，请重试");
+		catch (Exception e) {
+			// TODO: handle exception
+			JOptionPane.showMessageDialog(null, "账号或密码不能为空");
+			return;
 		}
+		
 	}
 		
 	public boolean isBlank() {
@@ -269,7 +276,7 @@ class Admin extends JFrame{
 	private class AdminMenu extends JFrame{
 		public AdminMenu() {
 			// TODO 自动生成的构造函数存根
-			this.setBounds(300, 100, 550, 430);// 位置参数
+			this.setBounds(300, 150, 500, 450);// 位置参数
 			this.setTitle("管理员" );// title
 			this.setLayout(null);// 布局
 			this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE); // 想要只关闭子窗口，方法如下：子窗口设置为setDefaultCloseOption(Jframe.DISPOSE_ON_CLOSE)
@@ -348,13 +355,15 @@ class Admin extends JFrame{
 					} else {
 						return;
 					}
-				}			
-				teaMenu();
+				}
+				else {
+					teaMenu();
+				}
 			}
 			
 			void teaMenu() {
 				JFrame frame = new JFrame();
-				frame.setBounds(300, 100, 550, 430);// 位置参数
+				frame.setBounds(300, 150, 500, 450);// 位置参数
 				frame.setTitle("教师信息管理");// title
 				frame.setLayout(null);// 布局
 				frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE); // 想要只关闭子窗口，方法如下：子窗口设置为setDefaultCloseOption(Jframe.DISPOSE_ON_CLOSE)
@@ -622,14 +631,16 @@ class Admin extends JFrame{
 						} else {
 							return;
 						}
-					}			
-					AOMenu();
+					}
+					else{
+						AOMenu();
+					}
 				}
 				
 				private void AOMenu() {
 					// TODO 自动生成的方法存根
 					JFrame frame = new JFrame();
-					frame.setBounds(300, 100, 550, 430);// 位置参数
+					frame.setBounds(300, 150, 500, 450);// 位置参数
 					frame.setTitle("教务员信息管理");// title
 					frame.setLayout(null);// 布局
 					frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE); // 想要只关闭子窗口，方法如下：子窗口设置为setDefaultCloseOption(Jframe.DISPOSE_ON_CLOSE)
@@ -872,21 +883,24 @@ class Admin extends JFrame{
 				// TODO 自动生成的构造函数存根
 				this.ALLStd= getStd();
 				if (ALLStd.size() == 0) {
-					int option = JOptionPane.showConfirmDialog(null, "无学生信息，是否新建xs信息文件?", "错误提示",
+					int option = JOptionPane.showConfirmDialog(null, "无学生信息，是否新建学生信息文件?", "错误提示",
 							JOptionPane.YES_OPTION);
 					if (option == JOptionPane.YES_OPTION) {
 						creatNewStd();
-					} else {
+					} 
+					else {
 						return;
 					}
 				}			
-				stdMenu();
+				else{
+					stdMenu();
+				}
 			}
 			
 			private void stdMenu() {
 				// TODO 自动生成的方法存根
 				JFrame frame = new JFrame();
-				frame.setBounds(300, 100, 550, 430);// 位置参数
+				frame.setBounds(300, 150, 500, 450);// 位置参数
 				frame.setTitle("学生信息管理");// title
 				frame.setLayout(null);// 布局
 				frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE); // 想要只关闭子窗口，方法如下：子窗口设置为setDefaultCloseOption(Jframe.DISPOSE_ON_CLOSE)

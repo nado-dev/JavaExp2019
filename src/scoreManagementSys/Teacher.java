@@ -222,7 +222,7 @@ public class Teacher extends JFrame{
 	        else {
 
 	        	JFrame frame = new JFrame();
-	        	frame.setBounds(300, 100, 700, 700);//位置参数
+	        	frame.setBounds(300, 150, 600, 600);//位置参数
 	        	frame.setTitle("课程成绩信息查询"+this.course_to_enter);//title
 	        	frame.setLayout(null);//布局
 	        	frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);  //想要只关闭子窗口而不退出
@@ -241,12 +241,10 @@ public class Teacher extends JFrame{
 	            
 	            JLabel labDetail = new JLabel(s4);
 	    	    labDetail.setBounds(50, 70, 400, 300);
-	    	    labDetail.setForeground(Color.RED);
 	    	    labDetail.setFont(new Font("Serif", Font.PLAIN, 16));
 
 	    	    JButton isChangeGrade = new JButton("更新此学生成绩");
 	    	    isChangeGrade.setBounds(150, 450, 180, 30);
-	    	    isChangeGrade.setForeground(Color.RED);
 	    	    
 	    	    frame.add(labWelcome);
 	    	    frame.add(labDetail);
@@ -273,7 +271,7 @@ public class Teacher extends JFrame{
 				 } );
 	        }
         }
-        else {
+       	else if (m == 1) {
         	 ArrayList<Grade> Allgrade1 = null;
              Allgrade1 = getGrade(this.course_to_enter);
              int i = 0;
@@ -302,6 +300,9 @@ public class Teacher extends JFrame{
              
              writeNewGrade(Allgrade1, this.course_to_enter);
         }
+       	else {
+			return;
+		}
     }
 }
 
@@ -411,6 +412,10 @@ public class Teacher extends JFrame{
      */
     void verify() { 
     	ArrayList<Teacher> teachers = this.Get_teachers();
+    	if (teachers.size() == 0) {
+			JOptionPane.showMessageDialog(null, "无教师信息");
+			return;
+		}
     	this.allTeaList = teachers;
     	String teaNum = null;
     	String password = null;
@@ -422,6 +427,10 @@ public class Teacher extends JFrame{
     	if (isBlank()) {			
         	teaNum = teaIDInput.getText();
         	password = teaPwInput.getText();
+		}
+    	if (teaNum == null || password == null) {
+			JOptionPane.showMessageDialog(null, "账号或密码不能为空");
+			return;
 		}
     	
     	for (Teacher teacher : teachers) {
@@ -522,8 +531,8 @@ public class Teacher extends JFrame{
   //内部类菜单
   	class TeaMenu extends JFrame{
   		public TeaMenu() {  	
-  			this.setBounds(300, 100, 550, 430);//位置参数
-  		    this.setTitle("学生"+ Teacher.this.loginTea.name);//title
+  			this.setBounds(300, 150, 500, 450);//位置参数
+  		    this.setTitle("教师"+ Teacher.this.loginTea.name);//title
   		    this.setLayout(null);//布局
   		    this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  //想要只关闭子窗口，方法如下：子窗口设置为setDefaultCloseOption(Jframe.DISPOSE_ON_CLOSE)     
   		    this.setVisible(true);
@@ -595,7 +604,7 @@ public class Teacher extends JFrame{
        		//接收课程编号输入
        		String courseNum = (String) JOptionPane.showInputDialog(null, "请选择您要查找成绩的课程编号", "成绩查询", JOptionPane.PLAIN_MESSAGE, null, objects, objects[0]);;
        		if(courseNum == null) {
-       			break;
+       			return;
        		}
        		if (courseNum =="") {
        			JOptionPane.showMessageDialog(null, "请正确输入！");
@@ -640,7 +649,7 @@ public class Teacher extends JFrame{
        	}
        		
        		JFrame frame = new JFrame();
-        	frame.setBounds(300, 100, 500, 400);//位置参数
+        	frame.setBounds(300, 150, 500, 450);//位置参数
         	frame.setTitle("课程成绩信息查询"+this.course_to_enter);//title
         	frame.setLayout(null);//布局
         	frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);  //想要只关闭子窗口而不退出
@@ -659,16 +668,15 @@ public class Teacher extends JFrame{
             
             JLabel labDetail = new JLabel(s4);
     	    labDetail.setBounds(50, 70, 400, 300);
-    	    labDetail.setForeground(Color.RED);
     	    labDetail.setFont(new Font("Serif", Font.PLAIN, 16));
     	    frame.add(labWelcome);
     	    frame.add(labDetail);
 		}
        	
-       	else 
+       	else if(m == 1) 
        	{
 	       	JFrame frame = new JFrame();
-	    	frame.setBounds(300, 100, 500, 400);//位置参数
+	    	frame.setBounds(300, 150, 500, 450);//位置参数
 	    	frame.setTitle("课程成绩信息查询"+this.course_to_enter);//title
 	    	frame.setLayout(null);//布局
 	    	frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);  //想要只关闭子窗口而不退出
@@ -691,12 +699,16 @@ public class Teacher extends JFrame{
 		    frame.add(labWelcome);
 		    frame.add(labDetail);
        	}
+       	else 
+       	{
+       		return;
+       	}
      }
   }
   	
   	class PersonalInfo extends JFrame{
 		public PersonalInfo() {
-			this.setBounds(300, 100, 500, 400);//位置参数
+			this.setBounds(300, 150, 500, 450);//位置参数
 		    this.setTitle("老师"+ Teacher.this.loginTea.name);//title
 		    this.setLayout(null);//布局
 		    this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);  //想要只关闭子窗口，方法如下：子窗口设置为setDefaultCloseOption(Jframe.DISPOSE_ON_CLOSE)     

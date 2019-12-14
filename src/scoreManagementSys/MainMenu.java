@@ -19,7 +19,7 @@ class MainMenu extends JFrame{
 
    public MainMenu()
    {  
-      this.setBounds(300, 100, 550, 430);//位置参数
+      this.setBounds(300, 150, 500, 450);//位置参数
       this.setTitle("学生成绩信息管理系统");//title
       this.setLayout(null);//布局
       this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);     

@@ -103,6 +103,10 @@ public class AcademicOfficer extends JFrame {
 	 */
 	void verify() {
 		ArrayList<AcademicOfficer> aos = this.getAOs();
+		if (aos.size() == 0) {
+			JOptionPane.showMessageDialog(null, "无教务员信息");
+			return;
+		}
 		this.allAOs = aos;
 		String AONum = null;
 		String pw = null;
@@ -114,6 +118,10 @@ public class AcademicOfficer extends JFrame {
 		if (isBlank()) {
 			AONum = AOIDInput.getText();
 			pw = AOPwInput.getText();
+		}
+		if (pw == null || AONum == null) {
+			JOptionPane.showMessageDialog(null, "账号或密码不能为空");
+			return;
 		}
 		for (AcademicOfficer ao : aos) {
 			if (AONum.equals(ao.staffNum)) {
@@ -196,7 +204,7 @@ public class AcademicOfficer extends JFrame {
 	// 菜单
 	class AOMenu extends JFrame {
 		public AOMenu() {
-			this.setBounds(300, 100, 550, 430);// 位置参数
+			this.setBounds(300, 150, 500, 450);// 位置参数
 			this.setTitle("教务员" + AcademicOfficer.this.loginAO.name);// title
 			this.setLayout(null);// 布局
 			this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE); // 想要只关闭子窗口，方法如下：子窗口设置为setDefaultCloseOption(Jframe.DISPOSE_ON_CLOSE)
@@ -402,7 +410,7 @@ public class AcademicOfficer extends JFrame {
 	class PersonalInfo extends JFrame {
 
 		public PersonalInfo() {
-			this.setBounds(300, 100, 500, 400);// 位置参数
+			this.setBounds(300, 150, 500, 450);// 位置参数
 			this.setTitle("教务员" + AcademicOfficer.this.loginAO.name);// title
 			this.setLayout(null);// 布局
 			this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE); // 想要只关闭子窗口，方法如下：子窗口设置为setDefaultCloseOption(Jframe.DISPOSE_ON_CLOSE)
@@ -549,7 +557,7 @@ public class AcademicOfficer extends JFrame {
 
 		void gradeMenu() {
 			JFrame frame = new JFrame();
-			frame.setBounds(300, 100, 550, 430);// 位置参数
+			frame.setBounds(300, 150, 500, 450);// 位置参数
 			frame.setTitle("教务员" + AcademicOfficer.this.loginAO.name);// title
 			frame.setLayout(null);// 布局
 			frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE); // 想要只关闭子窗口，方法如下：子窗口设置为setDefaultCloseOption(Jframe.DISPOSE_ON_CLOSE)
@@ -680,14 +688,14 @@ public class AcademicOfficer extends JFrame {
 				}
 			});
 			for(Grade grade :this.AllGrade) {
-				if (grade.grade.equals("undedined")) {
+				if (grade.grade.equals("undefined")) {
 					JOptionPane.showMessageDialog(null, "成绩尚未初始化");
 					return;
 				}
 			}
 			JOptionPane.showMessageDialog(null, "排序完成");
 			JFrame frame = new JFrame();
-			frame.setBounds(300, 100, 600, 600);// 位置参数
+			frame.setBounds(300, 150, 600, 600);// 位置参数
 			frame.setTitle("排序结果");// title
 			frame.setLayout(null);// 布局
 			frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE); 
@@ -792,7 +800,7 @@ public class AcademicOfficer extends JFrame {
 			}
 			int avg = total / count;
 			JFrame frame = new JFrame();
-			frame.setBounds(300, 100, 550, 430);// 位置参数
+			frame.setBounds(300, 100, 600, 600);// 位置参数
 			frame.setTitle("统计信息");// title
 			frame.setLayout(null);// 布局
 			frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE); // 想要只关闭子窗口，方法如下：子窗口设置为setDefaultCloseOption(Jframe.DISPOSE_ON_CLOSE)
@@ -926,14 +934,17 @@ public class AcademicOfficer extends JFrame {
 				} else {
 					return;
 				}
-			}			
-			courseMenu();
+			}
+			else {
+				courseMenu();
+			}
+
 		}
 
 		private void courseMenu() {
 			// TODO 自动生成的方法存根
 			JFrame frame = new JFrame();
-			frame.setBounds(300, 100, 550, 430);// 位置参数
+			frame.setBounds(300, 150, 500, 450);// 位置参数
 			frame.setTitle("课程信息管理");// title
 			frame.setLayout(null);// 布局
 			frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE); // 想要只关闭子窗口，方法如下：子窗口设置为setDefaultCloseOption(Jframe.DISPOSE_ON_CLOSE)
@@ -998,7 +1009,7 @@ public class AcademicOfficer extends JFrame {
 
 		private void add() {
 			JFrame frame = new JFrame();
-			frame.setBounds(300, 100, 550, 600);// 位置参数
+			frame.setBounds(300, 100, 600, 600);// 位置参数
 			frame.setTitle("统计信息");// title
 			frame.setLayout(null);// 布局
 			frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE); // 想要只关闭子窗口，方法如下：子窗口设置为setDefaultCloseOption(Jframe.DISPOSE_ON_CLOSE)
@@ -1088,7 +1099,7 @@ public class AcademicOfficer extends JFrame {
 				if(AllCourse.get(i).clsname.equals(AcademicOfficer.CourseMaintain.this.course_found)) {
 					AcademicOfficer.CourseMaintain.this.index = i;
 					JFrame frame = new JFrame();
-					frame.setBounds(300, 100, 550, 600);// 位置参数
+					frame.setBounds(300, 100, 600, 600);// 位置参数
 					frame.setTitle("查看课程信息");// title
 					frame.setLayout(null);// 布局
 					frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE); // 想要只关闭子窗口，方法如下：子窗口设置为setDefaultCloseOption(Jframe.DISPOSE_ON_CLOSE)
@@ -1114,7 +1125,6 @@ public class AcademicOfficer extends JFrame {
 					
 					labch = new JLabel("课时");
 					labch.setBounds(50, 140, 100, 50);
-					
 					txtch = new JTextField(AllCourse.get(i).clshour,30);
 					txtch.setBounds(130, 158, 180, 30);
 					
