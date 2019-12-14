@@ -1,2 +1,0 @@
-001		lzt		c001		RG		cpx		80
-002		lzt		c001		RG		lhb		100
