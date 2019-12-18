@@ -13,7 +13,7 @@ Admin类以及图形化 整合
 Teacher 类
 
 ### 崔培轩
-AcadaminOfficer类
+AcademinOfficer类
 
 ## 功能描述
 设计学生成绩管理系统（使用文件或数据库） 
