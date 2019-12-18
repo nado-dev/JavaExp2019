@@ -7,13 +7,13 @@
 Student类
 
 ### 房文宇
-Admin类以及图形化 整合
+Admin类以及图形化 小组代码整合
 
 ### 李子桐
 Teacher 类
 
 ### 崔培轩
-AcademinOfficer类
+AcademicOfficer 类
 
 ## 功能描述
 设计学生成绩管理系统（使用文件或数据库） 
